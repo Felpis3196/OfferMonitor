@@ -1,0 +1,41 @@
+# --------------------------
+# Arquivos do sistema
+# --------------------------
+.DS_Store
+
+# --------------------------
+# Backend (ASP.NET Core)
+# --------------------------
+# Ignorar todas as pastas bin e obj em qualquer subdiretório
+**/bin/
+**/obj/
+
+# Build output adicional da main
+bin/
+obj/
+
+# Configurações locais e sensíveis
+**/appsettings.json
+**/appsettings.*.json
+/backend/Uploads/
+backend/logs/
+
+# NuGet
+*.csproj.nuget.dgspec.json
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+project.assets.json
+project.nuget.cache
+*.csproj.EntityFrameworkCore.targets
+
+# --------------------------
+# Editores
+# --------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sw?
+.vs/

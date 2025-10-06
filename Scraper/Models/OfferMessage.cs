@@ -1,0 +1,9 @@
+﻿namespace Scraper.Models;
+
+public class OfferMessage
+{
+    public string Title { get; set; } = "";
+    public decimal Price { get; set; }
+    public string Url { get; set; } = "";
+    public DateTime FoundAt { get; set; } = DateTime.UtcNow;
+}

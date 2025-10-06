@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Api",
+    "\\Infrastructure\\Data",
+    "\\Scraper",
+    "\\Scraper\\Services",
+    "\\Worker"
+  ],
+  "SelectedNode": "\\Scraper\\Services\\RabbitMqPublisher.cs",
+  "PreviewInSolutionExplorer": false
+}
