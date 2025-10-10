@@ -9,3 +9,15 @@ C:\Users\fegri\OneDrive\Área de Trabalho\offers-monitor\Domain\obj\Debug\net8.0
 C:\Users\fegri\OneDrive\Área de Trabalho\offers-monitor\Domain\obj\Debug\net8.0\refint\Domain.dll
 C:\Users\fegri\OneDrive\Área de Trabalho\offers-monitor\Domain\obj\Debug\net8.0\Domain.pdb
 C:\Users\fegri\OneDrive\Área de Trabalho\offers-monitor\Domain\obj\Debug\net8.0\ref\Domain.dll
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\bin\Debug\net8.0\Domain.deps.json
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\bin\Debug\net8.0\Domain.dll
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\bin\Debug\net8.0\Domain.pdb
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.sourcelink.json
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.dll
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\refint\Domain.dll
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\Domain.pdb
+C:\Users\fegri\OneDrive\Área de Trabalho\OfferMonitor\Domain\obj\Debug\net8.0\ref\Domain.dll

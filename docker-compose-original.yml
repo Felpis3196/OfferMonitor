@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: offers_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: offersdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: offers_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" # painel web
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  api:
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    container_name: offers_api
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=offersdb;Username=postgres;Password=postgres"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Username: "guest"
+      RabbitMQ__Password: "guest"
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  worker:
+    build:
+      context: .
+      dockerfile: Worker/Dockerfile
+    container_name: offers_worker
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=offersdb;Username=postgres;Password=postgres"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Username: "guest"
+      RabbitMQ__Password: "guest"
+    depends_on:
+      - rabbitmq
+      - postgres
+
+volumes:
+  postgres_data:

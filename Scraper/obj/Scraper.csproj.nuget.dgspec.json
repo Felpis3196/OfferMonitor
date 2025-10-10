@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Scraper\\Scraper.csproj": {}
+    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Scraper\\Scraper.csproj": {}
   },
   "projects": {
-    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Application\\Application.csproj": {
+    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Application\\Application.csproj",
+        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Application\\Application.csproj",
         "packagesPath": "C:\\Users\\fegri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Application\\obj\\",
+        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,11 +32,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj"
+              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\Infrastructure.csproj"
+              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -51,7 +51,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -72,18 +72,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj": {
+    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj",
+        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\fegri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\obj\\",
+        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -116,7 +116,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -137,18 +137,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\Infrastructure.csproj": {
+    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\Infrastructure.csproj",
+        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\fegri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -169,8 +169,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj"
+              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj"
               }
             }
           }
@@ -185,7 +185,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -216,18 +216,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Scraper\\Scraper.csproj": {
+    "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Scraper\\Scraper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Scraper\\Scraper.csproj",
+        "projectUniqueName": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Scraper\\Scraper.csproj",
         "projectName": "Scraper",
-        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Scraper\\Scraper.csproj",
+        "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Scraper\\Scraper.csproj",
         "packagesPath": "C:\\Users\\fegri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Scraper\\obj\\",
+        "outputPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Scraper\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -248,11 +248,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Application\\Application.csproj": {
-                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Application\\Application.csproj"
+              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Application\\Application.csproj"
               },
-              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Domain\\Domain.csproj"
+              "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Domain\\Domain.csproj"
               }
             }
           }
@@ -267,7 +267,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -293,6 +293,10 @@
               "target": "Package",
               "version": "[9.0.9, )"
             },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.22.1, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.4, )"
@@ -300,6 +304,10 @@
             "RabbitMQ.Client": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "Selenium.WebDriver": {
+              "target": "Package",
+              "version": "[4.36.0, )"
             }
           },
           "imports": [
@@ -318,7 +326,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "j3G7YIqB04I=",
+  "dgSpecHash": "vflxKcGHfiQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Infrastructure\\Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Infrastructure\\Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fegri\\.nuget\\packages\\microsoft.entityframeworkcore\\9.0.9\\microsoft.entityframeworkcore.9.0.9.nupkg.sha512",
     "C:\\Users\\fegri\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\9.0.9\\microsoft.entityframeworkcore.abstractions.9.0.9.nupkg.sha512",

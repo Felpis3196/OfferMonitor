@@ -6,4 +6,6 @@ public class OfferMessage
     public decimal Price { get; set; }
     public string Url { get; set; } = "";
     public DateTime FoundAt { get; set; } = DateTime.UtcNow;
+    public string Store { get; internal set; }
+    public string Category { get; internal set; }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ugGPD2GM288=",
+  "dgSpecHash": "n8lgtbvJLL8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\offers-monitor\\Tests\\Tests.csproj",
+  "projectFilePath": "C:\\Users\\fegri\\OneDrive\\Área de Trabalho\\OfferMonitor\\Tests\\Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fegri\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",
     "C:\\Users\\fegri\\.nuget\\packages\\microsoft.codecoverage\\17.8.0\\microsoft.codecoverage.17.8.0.nupkg.sha512",

@@ -15,8 +15,10 @@
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.9",
           "Microsoft.Extensions.Hosting": "9.0.9",
           "Microsoft.Extensions.Hosting.Abstractions": "9.0.9",
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.22.1",
           "Newtonsoft.Json": "13.0.4",
-          "RabbitMQ.Client": "6.5.0"
+          "RabbitMQ.Client": "6.5.0",
+          "Selenium.WebDriver": "4.36.0"
         },
         "runtime": {
           "Scraper.dll": {}
@@ -457,6 +459,7 @@
           }
         }
       },
+      "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.22.1": {},
       "Newtonsoft.Json/13.0.4": {
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
@@ -498,6 +501,31 @@
           "lib/netstandard2.0/RabbitMQ.Client.dll": {
             "assemblyVersion": "6.0.0.0",
             "fileVersion": "6.5.0.0"
+          }
+        }
+      },
+      "Selenium.WebDriver/4.36.0": {
+        "runtime": {
+          "lib/net8.0/WebDriver.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux/native/selenium-manager": {
+            "rid": "linux",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/selenium-manager": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win/native/selenium-manager.exe": {
+            "rid": "win",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           }
         }
       },
@@ -848,6 +876,13 @@
       "path": "microsoft.extensions.primitives/9.0.9",
       "hashPath": "microsoft.extensions.primitives.9.0.9.nupkg.sha512"
     },
+    "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.22.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EfYANhAWqmWKoLwN6bxoiPZSOfJSO9lzX+UrU6GVhLhPub1Hd+5f0zL0/tggIA6mRz6Ebw2xCNcIsM4k+7NPng==",
+      "path": "microsoft.visualstudio.azure.containers.tools.targets/1.22.1",
+      "hashPath": "microsoft.visualstudio.azure.containers.tools.targets.1.22.1.nupkg.sha512"
+    },
     "Newtonsoft.Json/13.0.4": {
       "type": "package",
       "serviceable": true,
@@ -875,6 +910,13 @@
       "sha512": "sha512-9hY5HiWPtCla1/l0WmXmLnqoX7iKE3neBQUWnetIJrRpOvTbO//XQfQDh++xgHCshL40Kv/6bR0HDkmJz46twg==",
       "path": "rabbitmq.client/6.5.0",
       "hashPath": "rabbitmq.client.6.5.0.nupkg.sha512"
+    },
+    "Selenium.WebDriver/4.36.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jYehpVsZyC8Sn6BJJ2xr8vM9QyPTDks7MdrlfZQFxs3wa8Jg4LPHPnzEYRT1CY1vSSydxhBxuDJ8tnUxrXo9Qw==",
+      "path": "selenium.webdriver/4.36.0",
+      "hashPath": "selenium.webdriver.4.36.0.nupkg.sha512"
     },
     "System.Diagnostics.DiagnosticSource/9.0.9": {
       "type": "package",
