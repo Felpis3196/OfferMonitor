@@ -16,7 +16,7 @@ services:
     container_name: offers_rabbitmq
     ports:
       - "5672:5672"
-      - "15672:15672" # painel web
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -52,6 +52,27 @@ services:
     depends_on:
       - rabbitmq
       - postgres
+
+  scraper:
+    build:
+      context: .
+      dockerfile: Scraper/Dockerfile
+    container_name: offers_scraper
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Username: "guest"
+      RabbitMQ__Password: "guest"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=offersdb;Username=postgres;Password=postgres"
+      # Variáveis para otimizar o Chrome no container
+      CHROME_OPTS: "--no-sandbox --disable-dev-shm-usage --headless --disable-gpu --window-size=1920,1080"
+    depends_on:
+      - rabbitmq
+      - postgres
+    # Configurações específicas para Selenium
+    shm_size: 1gb
+    mem_limit: 2g
+    cpus: 1.0
 
 volumes:
   postgres_data:

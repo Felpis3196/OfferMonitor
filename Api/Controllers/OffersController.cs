@@ -1,5 +1,5 @@
 ﻿using Application.Dto;
-using Application.Services;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Scraper.Services;
@@ -10,10 +10,10 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class OffersController : ControllerBase
     {
-        private readonly OfferService _service;
+        private readonly IOfferService _service;
         private readonly ScraperService _scraperService;
 
-        public OffersController(OfferService service, ScraperService scraper)
+        public OffersController(IOfferService service, ScraperService scraper)
         {
             _service = service;
             _scraperService = scraper;
