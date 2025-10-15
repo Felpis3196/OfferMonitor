@@ -1,4 +1,6 @@
-using HtmlAgilityPack;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using Scraper.Models;
 
 namespace Scraper.Services.Implementations
@@ -8,30 +10,71 @@ namespace Scraper.Services.Implementations
         public async Task<List<OfferMessage>> ScrapeAsync(string url)
         {
             var offers = new List<OfferMessage>();
-            var web = new HtmlWeb();
-            var doc = await web.LoadFromWebAsync(url);
 
-            var nodes = doc.DocumentNode.SelectNodes("//div[contains(@data-component-type, 's-search-result')]");
+            var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.BinaryLocation = Environment.GetEnvironmentVariable("CHROME_BIN");
 
-            if (nodes == null) return offers;
+            using var driver = new ChromeDriver(options);
+            driver.Navigate().GoToUrl(url);
 
-            foreach (var node in nodes)
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+
+            while (true)
             {
-                var title = node.SelectSingleNode(".//span[@class='a-text-normal']")?.InnerText?.Trim() ?? "Sem título";
-                var priceText = node.SelectSingleNode(".//span[@class='a-price-whole']")?.InnerText?.Trim() ?? "0";
-                decimal.TryParse(priceText.Replace(".", "").Replace(",", "."), out var price);
-                var link = node.SelectSingleNode(".//a[@class='a-link-normal']")?.GetAttributeValue("href", url) ?? url;
+                wait.Until(d => d.FindElements(By.CssSelector("div[data-component-type='s-search-result']")).Count > 0);
 
-                offers.Add(new OfferMessage
+                var products = driver.FindElements(By.CssSelector("div[data-component-type='s-search-result']"));
+
+                foreach (var product in products)
                 {
-                    Title = title,
-                    Price = price,
-                    Url = link.StartsWith("http") ? $"https://www.amazon.com.br{link}" : link,
-                    Store = "Amazon",
-                    Category = "Geral"
-                });
+                    try
+                    {
+                        var titleElem = product.FindElement(By.CssSelector("h2 a span"));
+                        var linkElem = product.FindElement(By.CssSelector("h2 a"));
+                        var priceElem = product.FindElements(By.CssSelector("span.a-price > span.a-offscreen")).FirstOrDefault();
+
+                        if (priceElem == null) continue;
+
+                        var title = titleElem.Text.Trim();
+                        var priceText = priceElem.Text.Replace("R$", "").Replace(".", "").Replace(",", ".").Trim();
+                        decimal.TryParse(priceText, out var price);
+                        var link = linkElem.GetAttribute("href");
+
+                        Console.WriteLine($"[DEBUG] Produto: {title} - R${price}"); // log para debug
+
+                        offers.Add(new OfferMessage
+                        {
+                            Title = title,
+                            Price = price,
+                            Url = link,
+                            Store = "Amazon",
+                            Category = "Geral"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro no produto: {ex.Message}");
+                        continue;
+                    }
+                }
+
+                try
+                {
+                    var nextBtn = driver.FindElement(By.CssSelector("li.a-last a"));
+                    nextBtn.Click();
+                    await Task.Delay(5000); // espera JS carregar
+                }
+                catch
+                {
+                    break;
+                }
             }
 
+            driver.Quit();
             return offers;
         }
     }

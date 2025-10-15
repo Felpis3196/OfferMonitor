@@ -29,7 +29,6 @@ namespace Worker
                 _logger.LogError(ex, "Erro ao executar scrapers.");
             }
 
-            // Loop simples para manter o worker vivo
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker rodando às: {time}", DateTimeOffset.Now);

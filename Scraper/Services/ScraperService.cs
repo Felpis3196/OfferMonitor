@@ -1,6 +1,6 @@
-﻿using HtmlAgilityPack;
-using Application.Dto;
+﻿using Application.Dto;
 using Microsoft.Extensions.Configuration;
+using Scraper.Services.Implementations;
 
 namespace Scraper.Services
 {
@@ -21,48 +21,73 @@ namespace Scraper.Services
 
             if (sites == null || sites.Length == 0)
             {
-                Console.WriteLine("Nenhum site configurado para scraping.");
+                Console.WriteLine("❌ Nenhum site configurado para scraping.");
                 return;
             }
 
             foreach (var site in sites)
             {
-                Console.WriteLine($"Iniciando scraper em: {site}");
+                Console.WriteLine($"\n===============================");
+                Console.WriteLine($"🚀 Iniciando scraper em: {site}");
+                Console.WriteLine($"===============================\n");
+
                 await RunScraperAsync(site);
             }
         }
 
         public async Task RunScraperAsync(string url)
         {
-            var web = new HtmlWeb();
-            var doc = web.Load(url);
-
-            var title = doc.DocumentNode.SelectSingleNode("//div[@class='offer']/h2")?.InnerText?.Trim() ?? "Sem título";
-            var priceText = doc.DocumentNode.SelectSingleNode("//div[@class='offer']/span[@class='price']")?.InnerText?.Trim() ?? "0";
-            decimal.TryParse(priceText.Replace("R$", ""), out var price);
-
-            var offers = new List<OfferInput>
+            try
             {
-                new OfferInput
-                {
-                    Title = title,
-                    Price = price,
-                    Url = url,
-                    Store = GetStoreNameFromUrl(url),
-                    Category = "Eletrônicos"
-                }
-            };
+                var scraper = GetScraperFromUrl(url);
 
-            _publisher.Publish(offers);
-            await Task.CompletedTask;
+                if (scraper == null)
+                {
+                    Console.WriteLine($"⚠️ Nenhum scraper compatível para: {url}");
+                    return;
+                }
+
+                var offers = await scraper.ScrapeAsync(url);
+
+                if (offers == null || !offers.Any())
+                {
+                    Console.WriteLine($"⚠️ Nenhuma oferta encontrada em {url}");
+                    return;
+                }
+
+                var offerInputs = offers.Select(o => new OfferInput
+                {
+                    Title = o.Title,
+                    Url = o.Url,
+                    Store = o.Store,
+                    Category = o.Category,
+                    Price = o.Price
+                }).ToList();
+
+                Console.WriteLine($"✅ {offerInputs.Count} ofertas coletadas em {url}");
+
+                _publisher.Publish(offerInputs);
+                Console.WriteLine($"📦 Ofertas enviadas para o RabbitMQ com sucesso!\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao processar {url}: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
-        private string GetStoreNameFromUrl(string url)
+        private ISiteScraper? GetScraperFromUrl(string url)
         {
-            if (url.Contains("amazon")) return "Amazon";
-            if (url.Contains("kabum")) return "Kabum";
-            if (url.Contains("pichau")) return "Pichau";
-            return "Loja Desconhecida";
+            url = url.ToLower();
+
+            if (url.Contains("amazon"))
+                return new AmazonScraper();
+            if (url.Contains("kabum"))
+                return new KabumScraper();
+            if (url.Contains("magalu"))
+                return new MagaluScraper();
+
+            return new GenericScraper();
         }
     }
 }

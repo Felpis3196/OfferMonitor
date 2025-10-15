@@ -6,7 +6,7 @@ using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Scraper.Services;
 using RabbitMQ.Client; 
-using System.Threading;
+using Scraper;
 
 var builder = WebApplication.CreateBuilder(args);
 
