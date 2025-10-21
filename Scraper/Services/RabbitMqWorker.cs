@@ -7,84 +7,76 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Scraper.Helpers;
 using System.Text;
 
 namespace Scraper.Services
 {
     public class RabbitMqWorker : BackgroundService
     {
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IConfiguration _config;
+        private IConnection? _connection;
+        private IModel? _channel;
 
-        public RabbitMqWorker(IServiceScopeFactory scopeFactory, IConfiguration cfg)
+        public RabbitMqWorker(IServiceScopeFactory scopeFactory, IConfiguration config)
         {
             _scopeFactory = scopeFactory;
-
-            var factory = new ConnectionFactory()
-            {
-                HostName = cfg["RabbitMQ:Host"],
-                UserName = cfg["RabbitMQ:User"] ?? "guest",
-                Password = cfg["RabbitMQ:Password"] ?? "guest"
-            };
-
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-
-            _channel.ExchangeDeclare("offers", ExchangeType.Fanout);
-            var queue = _channel.QueueDeclare().QueueName;
-            _channel.QueueBind(queue, "offers", "");
-            _channel.BasicQos(0, 10, false);
-
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += OnReceived;
-            _channel.BasicConsume(queue, false, consumer);
-        }
-
-        private async void OnReceived(object sender, BasicDeliverEventArgs e)
-        {
-            try
-            {
-                var json = Encoding.UTF8.GetString(e.Body.ToArray());
-                var offers = JsonConvert.DeserializeObject<List<OfferInput>>(json);
-
-                using var scope = _scopeFactory.CreateScope();
-                var repo = scope.ServiceProvider.GetRequiredService<IOfferRepository>();
-
-                if (offers != null)
-                {
-                    foreach (var offerInput in offers)
-                    {
-                        // 🔹 Extrai domínio do URL
-                        var uri = new Uri(offerInput.Url);
-                        var domain = uri.Host.Replace("www.", "");
-
-                        var offer = new Offer
-                        {
-                            Title = offerInput.Title,
-                            Store = offerInput.Store,
-                            Category = offerInput.Category,
-                            Url = offerInput.Url,
-                            Price = offerInput.Price,
-                            Domain = domain
-                        };
-
-                        await repo.AddAsync(offer);
-                    }
-                }
-
-                _channel.BasicAck(e.DeliveryTag, false);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erro ao processar mensagem do RabbitMQ: {ex.Message}");
-            }
+            _config = config;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // Worker roda em background continuamente
+            _connection = RabbitMqHelper.GetConnectionWithRetry(
+                _config["RabbitMQ:Host"] ?? "localhost",
+                _config["RabbitMQ:Username"] ?? "guest",
+                _config["RabbitMQ:Password"] ?? "guest"
+            );
+
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare("offers_exchange", ExchangeType.Fanout, durable: true);
+
+            var queue = _channel.QueueDeclare().QueueName;
+            _channel.QueueBind(queue, "offers_exchange", "");
+
+            var consumer = new EventingBasicConsumer(_channel);
+            consumer.Received += OnMessage;
+
+            _channel.BasicConsume(queue: queue, autoAck: false, consumer: consumer);
+            Console.WriteLine("🐇 Escutando mensagens em 'offers_exchange'...");
             return Task.CompletedTask;
+        }
+
+        private async void OnMessage(object sender, BasicDeliverEventArgs e)
+        {
+            try
+            {
+                var offers = JsonConvert.DeserializeObject<List<OfferInput>>(Encoding.UTF8.GetString(e.Body.ToArray()));
+                if (offers == null) return;
+
+                using var scope = _scopeFactory.CreateScope();
+                var repo = scope.ServiceProvider.GetRequiredService<IOfferRepository>();
+
+                foreach (var o in offers)
+                {
+                    var uri = new Uri(o.Url);
+                    await repo.AddAsync(new Offer
+                    {
+                        Title = o.Title,
+                        Store = o.Store,
+                        Category = o.Category,
+                        Url = o.Url,
+                        Price = o.Price,
+                        Domain = uri.Host.Replace("www.", "")
+                    });
+                }
+
+                _channel!.BasicAck(e.DeliveryTag, false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao processar mensagem: {ex.Message}");
+            }
         }
 
         public override void Dispose()

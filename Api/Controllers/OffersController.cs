@@ -2,7 +2,10 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
+using Scraper.Helpers;
 using Scraper.Services;
+using System.Text;
 
 namespace Api.Controllers
 {
@@ -11,12 +14,10 @@ namespace Api.Controllers
     public class OffersController : ControllerBase
     {
         private readonly IOfferService _service;
-        private readonly ScraperService _scraperService;
 
-        public OffersController(IOfferService service, ScraperService scraper)
+        public OffersController(IOfferService service)
         {
             _service = service;
-            _scraperService = scraper;
         }
 
         // GET api/offers
@@ -54,13 +55,33 @@ namespace Api.Controllers
         }
 
         [HttpPost("scrape")]
-        public async Task<IActionResult> RunScraper([FromBody] ScraperRequest request)
+        public IActionResult RequestScraping([FromBody] ScraperRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Url))
                 return BadRequest("A URL é obrigatória.");
 
-            await _scraperService.RunScraperAsync(request.Url);
-            return Ok($"Scraper executado com sucesso para o site: {request.Url}");
+            using var connection = RabbitMqHelper.GetConnectionWithRetry("rabbitmq", "guest", "guest");
+            using var channel = connection.CreateModel();
+
+            channel.QueueDeclare(
+                queue: "scrape_requests",
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null
+            );
+
+            var body = Encoding.UTF8.GetBytes(request.Url);
+            channel.BasicPublish(
+                exchange: "",
+                routingKey: "scrape_requests",
+                basicProperties: null,
+                body: body
+            );
+
+            Console.WriteLine($"📩 Pedido de scraping publicado: {request.Url}");
+            return Ok($"📩 Pedido de scraping enviado para: {request.Url}");
         }
+
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using Scraper.Helpers;
 using System.Text;
 
 namespace Scraper.Services
@@ -10,51 +11,25 @@ namespace Scraper.Services
     {
         private readonly IConnection _connection;
         private readonly IModel _channel;
-        private readonly string _exchange;
+        private readonly string _exchange = "offers_exchange";
 
         public RabbitMqPublisher(IConfiguration cfg)
         {
-            var factory = new ConnectionFactory()
-            {
-                HostName = cfg["RabbitMQ:Host"],
-                UserName = cfg["RabbitMQ:Username"],
-                Password = cfg["RabbitMQ:Password"]
-            };
+            _connection = RabbitMqHelper.GetConnectionWithRetry(
+                cfg["RabbitMQ:Host"] ?? "localhost",
+                cfg["RabbitMQ:Username"] ?? "guest",
+                cfg["RabbitMQ:Password"] ?? "guest"
+            );
 
-            const int maxRetries = 10;
-            const int delaySeconds = 5;
-
-            for (int i = 0; i < maxRetries; i++)
-            {
-                try
-                {
-                    _connection = factory.CreateConnection();
-                    _channel = _connection.CreateModel();
-                    Console.WriteLine($"Conectado ao RabbitMQ na tentativa {i + 1}");
-                    _exchange = "offers_exchange";
-                    _channel.ExchangeDeclare(exchange: _exchange, type: ExchangeType.Fanout, durable: true);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"⚠️ Tentativa {i + 1}/{maxRetries} falhou: {ex.Message}");
-                    if (i == maxRetries - 1) throw;
-                    Thread.Sleep(delaySeconds * 1000);
-                }
-            }
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare(exchange: _exchange, type: ExchangeType.Fanout, durable: true);
         }
 
         public void Publish(List<OfferInput> offers)
         {
-            var json = JsonConvert.SerializeObject(offers);
-            var body = Encoding.UTF8.GetBytes(json);
-
-            _channel.BasicPublish(exchange: _exchange,
-                                  routingKey: "",
-                                  basicProperties: null,
-                                  body: body);
-
-            Console.WriteLine($" [x] Publicado {offers.Count} ofertas");
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(offers));
+            _channel.BasicPublish(exchange: _exchange, routingKey: "", basicProperties: null, body: body);
+            Console.WriteLine($"📦 Publicadas {offers.Count} ofertas em '{_exchange}'");
         }
     }
 }

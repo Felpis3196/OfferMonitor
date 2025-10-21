@@ -19,9 +19,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<RabbitMqPublisher>();
 builder.Services.AddHostedService<RabbitMqWorker>();
 
-// Scraper
-builder.Services.AddScoped<ScraperService>();
-
 // EF Core + Postgres
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

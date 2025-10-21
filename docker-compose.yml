@@ -21,6 +21,15 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: offers_selenium
+    ports:
+      - "4444:4444"
+    shm_size: 2g
+    mem_limit: 2g
+    cpus: 1.0
+
   api:
     build:
       context: .
@@ -38,21 +47,6 @@ services:
       - postgres
       - rabbitmq
 
-  worker:
-    build:
-      context: .
-      dockerfile: Worker/Dockerfile
-    container_name: offers_worker
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Database=offersdb;Username=postgres;Password=postgres"
-      RabbitMQ__Host: "rabbitmq"
-      RabbitMQ__Username: "guest"
-      RabbitMQ__Password: "guest"
-    depends_on:
-      - rabbitmq
-      - postgres
-
   scraper:
     build:
       context: .
@@ -64,12 +58,12 @@ services:
       RabbitMQ__Username: "guest"
       RabbitMQ__Password: "guest"
       ConnectionStrings__DefaultConnection: "Host=postgres;Database=offersdb;Username=postgres;Password=postgres"
-      # Variáveis para otimizar o Chrome no container
+      SELENIUM_URL: "http://selenium:4444/wd/hub"
       CHROME_OPTS: "--no-sandbox --disable-dev-shm-usage --headless --disable-gpu --window-size=1920,1080"
     depends_on:
+      - selenium
       - rabbitmq
       - postgres
-    # Configurações específicas para Selenium
     shm_size: 1gb
     mem_limit: 2g
     cpus: 1.0
