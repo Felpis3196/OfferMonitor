@@ -14,8 +14,6 @@ Host.CreateDefaultBuilder(args)
     {
         services.AddSingleton<RabbitMqPublisher>();
         services.AddScoped<ScraperService>();
-
-        // 🔹 Worker que ouve a fila de requisições
         services.AddHostedService<ScraperRequestWorker>();
     })
     .Build()

@@ -24,7 +24,7 @@ namespace Scraper.Services
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _connection = RabbitMqHelper.GetConnectionWithRetry(
-                _config["RabbitMQ:Host"] ?? "localhost",
+                _config["RabbitMQ:Host"] ?? "rabbitmq",
                 _config["RabbitMQ:Username"] ?? "guest",
                 _config["RabbitMQ:Password"] ?? "guest"
             );
