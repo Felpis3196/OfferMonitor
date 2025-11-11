@@ -126,7 +126,7 @@ const fetchLogs = async () => {
   try {
     isLoading.value = true;
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/offers/scrape/${props.requestId}/logs`
+      `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/offers/scrape/logs`
     );
 
     if (response.ok) {
