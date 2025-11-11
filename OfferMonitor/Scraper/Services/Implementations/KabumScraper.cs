@@ -1,4 +1,5 @@
 using Scraper.Models;
+using Scraper.Services;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
@@ -15,7 +16,7 @@ namespace Scraper.Services.Implementations
             var seleniumUrl = Environment.GetEnvironmentVariable("SELENIUM_URL")
                               ?? "http://selenium:4444/wd/hub";
 
-            Console.WriteLine($"🚀 Conectando ao Selenium remoto: {seleniumUrl}");
+            LoggingHelper.Log($"🚀 Conectando ao Selenium remoto: {seleniumUrl}", "INFO");
 
             try
             {
@@ -44,7 +45,7 @@ namespace Scraper.Services.Implementations
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
                 driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(30);
 
-                Console.WriteLine($"🌐 Acessando: {url}");
+                LoggingHelper.Log($"🌐 Acessando: {url}", "INFO");
                 driver.Navigate().GoToUrl(url);
 
                 // Espera só até produtos com "R$" aparecerem
@@ -72,7 +73,7 @@ namespace Scraper.Services.Implementations
                 ");
                 #pragma warning restore CS8600 // Conversão de literal nula ou possível valor nulo em tipo não anulável.
 
-                Console.WriteLine($"📦 {data.Count} produtos capturados via JS.");
+                LoggingHelper.Log($"📦 {data.Count} produtos capturados via JS.", "INFO");
 
                 foreach (var obj in data)
                 {
@@ -100,18 +101,18 @@ namespace Scraper.Services.Implementations
                         Store = "Kabum",
                         Category = "Eletrônicos"
                     });
-                    Console.WriteLine($"{title} de {oldPrice} por {price} com desconto de {discount}");
+                    LoggingHelper.Log($"{title} de {oldPrice} por {price} com desconto de {discount}", "SUCCESS");
                 }
 
                 driver.Quit();
-                Console.WriteLine("🧹 Selenium remoto finalizado.");
+                LoggingHelper.Log("🧹 Selenium remoto finalizado.", "INFO");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ ERRO no Selenium remoto: {ex.Message}");
+                LoggingHelper.Log($"❌ ERRO no Selenium remoto: {ex.Message}", "ERROR");
             }
 
-            Console.WriteLine($"🔎 Total de produtos válidos: {offers.Count}");
+            LoggingHelper.Log($"🔎 Total de produtos válidos: {offers.Count}", "INFO");
             return offers;
         }
     }

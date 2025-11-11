@@ -1,4 +1,5 @@
 ﻿using Scraper.Models;
+using Scraper.Services;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
@@ -15,7 +16,7 @@ namespace Scraper.Services.Implementations
             var offers = new List<OfferMessage>();
             var seleniumUrl = Environment.GetEnvironmentVariable("SELENIUM_URL") ?? "http://selenium:4444/wd/hub";
 
-            Console.WriteLine($"🚀 Conectando ao Selenium remoto: {seleniumUrl}");
+            LoggingHelper.Log($"🚀 Conectando ao Selenium remoto: {seleniumUrl}", "INFO");
 
             try
             {
@@ -41,7 +42,7 @@ namespace Scraper.Services.Implementations
 
                 driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(40);
 
-                Console.WriteLine($"🌐 Acessando: {url}");
+                LoggingHelper.Log($"🌐 Acessando: {url}", "INFO");
                 driver.Navigate().GoToUrl(url);
 
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
@@ -107,7 +108,7 @@ namespace Scraper.Services.Implementations
                 var data = (IReadOnlyCollection<object>)js.ExecuteScript(script);
                 #pragma warning restore CS8600
 
-                Console.WriteLine($"📦 {data.Count} possíveis produtos encontrados.");
+                LoggingHelper.Log($"📦 {data.Count} possíveis produtos encontrados.", "INFO");
 
                 var seen = new HashSet<string>();
 
@@ -144,15 +145,15 @@ namespace Scraper.Services.Implementations
                         Category = "Geral",
                     });
 
-                    Console.WriteLine($"✅ {title} - R${price}");
+                    LoggingHelper.Log($"✅ {title} - R${price}", "SUCCESS");
                 }
 
                 driver.Quit();
-                Console.WriteLine($"🧹 Selenium remoto finalizado. Total de produtos: {offers.Count}");
+                LoggingHelper.Log($"🧹 Selenium remoto finalizado. Total de produtos: {offers.Count}", "INFO");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ ERRO no GenericScraper: {ex.Message}");
+                LoggingHelper.Log($"❌ ERRO no GenericScraper: {ex.Message}", "ERROR");
             }
 
             return offers;

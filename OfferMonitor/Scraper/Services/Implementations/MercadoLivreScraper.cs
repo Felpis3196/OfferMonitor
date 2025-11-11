@@ -15,7 +15,7 @@ namespace Scraper.Services.Implementations
             var seleniumUrl = Environment.GetEnvironmentVariable("SELENIUM_URL")
                               ?? "http://selenium:4444/wd/hub";
 
-            Console.WriteLine($"🚀 Conectando ao Selenium remoto: {seleniumUrl}");
+            LoggingHelper.Log($"🚀 Conectando ao Selenium remoto: {seleniumUrl}", "INFO");
 
             try
             {
@@ -42,7 +42,7 @@ namespace Scraper.Services.Implementations
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
                 driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(30);
 
-                Console.WriteLine($"🌐 Acessando: {url}");
+                LoggingHelper.Log($"🌐 Acessando: {url}", "INFO");
                 driver.Navigate().GoToUrl(url);
 
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
@@ -108,7 +108,7 @@ namespace Scraper.Services.Implementations
                 var data = (IReadOnlyCollection<object>)js.ExecuteScript(script);
                 #pragma warning restore CS8600
 
-                Console.WriteLine($"📦 {data.Count} produtos capturados via JS.");
+                LoggingHelper.Log($"📦 {data.Count} produtos capturados via JS.", "INFO");
 
                 var seen = new HashSet<string>();
 

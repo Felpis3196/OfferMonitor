@@ -1,4 +1,5 @@
 ﻿using Scraper.Models;
+using Scraper.Services;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
@@ -55,7 +56,7 @@ namespace Scraper.Services.Implementations
             }
             catch
             {
-                Console.WriteLine("⚠️ Nenhum produto visível via Selenium. Tentando via API...");
+                LoggingHelper.Log("⚠️ Nenhum produto visível via Selenium. Tentando via API...", "WARNING");
             }
 
             // --- SCRIPT JAVASCRIPT ROBUSTO ---
@@ -126,7 +127,7 @@ namespace Scraper.Services.Implementations
                                 Category = brand
                             });
 
-                            Console.WriteLine($"✅ Capturado: {title} - R${price}");
+                            LoggingHelper.Log($"✅ Capturado: {title} - R${price}", "SUCCESS");
                         }
                     }
                 }
@@ -141,7 +142,7 @@ namespace Scraper.Services.Implementations
                     if (!string.IsNullOrEmpty(searchTerm))
                     {
                         var apiUrl = $"https://www.magazineluiza.com.br/busca/api/v2/{searchTerm}/";
-                        Console.WriteLine($"🔍 Buscando via API: {apiUrl}");
+                        LoggingHelper.Log($"🔍 Buscando via API: {apiUrl}", "INFO");
 
                         var response = await _httpClient.GetAsync(apiUrl);
                         if (response.IsSuccessStatusCode)

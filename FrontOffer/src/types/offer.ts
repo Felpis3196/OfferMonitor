@@ -28,6 +28,14 @@ export interface ScraperResponse {
   url: string;
   success: boolean;
   error?: string;
+  requestId?: string;
+}
+
+export interface ScrapingLogEntry {
+  requestId: string;
+  timestamp: string;
+  message: string;
+  level: string;
 }
 
 export interface ApiResponse<T> {

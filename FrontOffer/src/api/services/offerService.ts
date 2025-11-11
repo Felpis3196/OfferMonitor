@@ -79,9 +79,9 @@ export class OfferService {
   /**
    * Solicita scraping de uma URL
    */
-  async requestScraping(request: ScraperRequest): Promise<string> {
+  async requestScraping(request: ScraperRequest): Promise<{ message: string; requestId: string }> {
     try {
-      const response = await apiClient.post<ScraperResponse>(
+      const response = await apiClient.post<ScraperResponse & { requestId?: string }>(
         API_CONFIG.endpoints.scrape,
         request,
         60000 // Timeout de 60 segundos para scraping
@@ -97,13 +97,38 @@ export class OfferService {
         throw new Error(response.data.message || response.data.error || 'Erro ao solicitar scraping');
       }
       
-      return response.data?.message || 'Scraping solicitado com sucesso';
+      return {
+        message: response.data?.message || 'Scraping solicitado com sucesso',
+        requestId: (response.data as any)?.requestId || ''
+      };
     } catch (error) {
       // Propaga o erro com mensagem mais clara
       if (error instanceof Error) {
         throw error;
       }
       throw new Error('Erro desconhecido ao solicitar scraping');
+    }
+  }
+
+  /**
+   * Busca logs de scraping por request ID
+   */
+  async getScrapingLogs(): Promise<{ logs: any[] }> {
+    try {
+      const response = await apiClient.get<{ requestId: string; logs: any[] }>(
+        `${API_CONFIG.endpoints.scrape}/logs`
+      );
+      
+      if (response.status !== 200) {
+        throw new Error(`Erro ao buscar logs: ${response.message}`);
+      }
+      
+      return response.data || { logs: [] };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Erro ao buscar logs de scraping');
     }
   }
 }

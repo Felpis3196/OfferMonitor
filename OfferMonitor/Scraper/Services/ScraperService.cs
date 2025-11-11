@@ -35,23 +35,37 @@ namespace Scraper.Services
             }
         }
 
-        public async Task RunScraperAsync(string url)
+        public async Task RunScraperAsync(string url, ScrapingLogger? logger = null)
         {
             try
             {
+                // Define o logger no contexto para uso pelos scrapers
+                LoggingHelper.SetLogger(logger);
+                
+                logger?.Log($"🔍 Identificando scraper adequado para: {url}", "INFO");
                 var scraper = GetScraperFromUrl(url);
 
                 if (scraper == null)
                 {
-                    Console.WriteLine($"⚠️ Nenhum scraper compatível para: {url}");
+                    var message = $"⚠️ Nenhum scraper compatível para: {url}";
+                    LoggingHelper.Log(message, "WARNING");
                     return;
                 }
 
+                var scraperName = scraper.GetType().Name.Replace("Scraper", "");
+                LoggingHelper.Log($"✅ Scraper {scraperName} selecionado", "SUCCESS");
+                LoggingHelper.Log("🚀 Iniciando processo de scraping...", "INFO");
+
+                // Os scrapers usarão LoggingHelper.Log que automaticamente usa o logger
                 var offers = await scraper.ScrapeAsync(url);
+                
+                // Limpa o logger do contexto
+                LoggingHelper.SetLogger(null);
 
                 if (offers == null || !offers.Any())
                 {
-                    Console.WriteLine($"⚠️ Nenhuma oferta encontrada em {url}");
+                    var message = $"⚠️ Nenhuma oferta encontrada em {url}";
+                    LoggingHelper.Log(message, "WARNING");
                     return;
                 }
 
@@ -64,15 +78,28 @@ namespace Scraper.Services
                     Price = o.Price
                 }).ToList();
 
-                Console.WriteLine($"✅ {offerInputs.Count} ofertas coletadas em {url}");
+                var successMessage = $"✅ {offerInputs.Count} ofertas coletadas em {url}";
+                LoggingHelper.Log(successMessage, "SUCCESS");
 
+                LoggingHelper.Log("📤 Enviando ofertas para o RabbitMQ...", "INFO");
                 _publisher.Publish(offerInputs);
-                Console.WriteLine($"📦 Ofertas enviadas para o RabbitMQ com sucesso!\n");
+                
+                var publishMessage = $"📦 {offerInputs.Count} ofertas enviadas para o RabbitMQ com sucesso!";
+                LoggingHelper.Log(publishMessage, "SUCCESS");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao processar {url}: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                var errorMessage = $"❌ Erro ao processar {url}: {ex.Message}";
+                LoggingHelper.Log(errorMessage, "ERROR");
+                if (!string.IsNullOrEmpty(ex.StackTrace))
+                {
+                    LoggingHelper.Log($"Stack trace: {ex.StackTrace}", "ERROR");
+                }
+            }
+            finally
+            {
+                // Limpa o logger do contexto
+                LoggingHelper.SetLogger(null);
             }
         }
 

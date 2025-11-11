@@ -88,6 +88,13 @@ namespace Api.Controllers
                     return BadRequest(new { message = "A URL é obrigatória.", success = false });
                 }
 
+                // Gera um ID único para este request
+                var requestId = Guid.NewGuid().ToString();
+                
+                // Adiciona log inicial
+                _logService.AddLog(requestId, $"📩 Pedido de scraping recebido para: {request.Url}", "INFO");
+                _logService.AddLog(requestId, "🔄 Preparando envio para fila de processamento...", "INFO");
+
                 var rabbitMqHost = _configuration["RabbitMQ:Host"] ?? "rabbitmq";
                 var rabbitMqUser = _configuration["RabbitMQ:Username"] ?? "guest";
                 var rabbitMqPass = _configuration["RabbitMQ:Password"] ?? "guest";
@@ -96,12 +103,18 @@ namespace Api.Controllers
                 IConnection connection;
                 try
                 {
+                    _logService.AddLog(requestId, "🔌 Conectando ao RabbitMQ...", "INFO");
                     connection = RabbitMqHelper.GetConnectionWithRetry(rabbitMqHost, rabbitMqUser, rabbitMqPass, maxRetries: 3, delaySeconds: 2);
+                    _logService.AddLog(requestId, "✅ Conectado ao RabbitMQ com sucesso", "SUCCESS");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"❌ Erro ao conectar ao RabbitMQ: {ex.Message}");
-                    return StatusCode(503, new { message = "Serviço de mensageria indisponível. Tente novamente mais tarde.", success = false });
+                    _logService.AddLog(requestId, $"❌ Erro ao conectar ao RabbitMQ: {ex.Message}", "ERROR");
+                    return StatusCode(503, new { 
+                        message = "Serviço de mensageria indisponível. Tente novamente mais tarde.", 
+                        success = false,
+                        requestId = requestId
+                    });
                 }
 
                 try
@@ -118,8 +131,19 @@ namespace Api.Controllers
 
                     var properties = channel.CreateBasicProperties();
                     properties.Persistent = true;
+                    properties.Headers = new Dictionary<string, object>
+                    {
+                        { "RequestId", requestId }
+                    };
 
-                    var body = Encoding.UTF8.GetBytes(request.Url);
+                    // Cria mensagem com URL e RequestId
+                    var message = new
+                    {
+                        Url = request.Url,
+                        RequestId = requestId
+                    };
+
+                    var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
                     channel.BasicPublish(
                         exchange: "",
                         routingKey: "scrape_requests",
@@ -127,11 +151,13 @@ namespace Api.Controllers
                         body: body
                     );
 
-                    Console.WriteLine($"📩 Pedido de scraping publicado: {request.Url}");
+                    _logService.AddLog(requestId, $"✅ Pedido de scraping publicado na fila com sucesso", "SUCCESS");
+                    _logService.AddLog(requestId, "⏳ Aguardando processamento pelo serviço de scraping...", "INFO");
                     
                     return Ok(new { 
                         message = $"Pedido de scraping enviado para: {request.Url}", 
                         url = request.Url,
+                        requestId = requestId,
                         success = true 
                     });
                 }
@@ -143,11 +169,50 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao processar pedido de scraping: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                return StatusCode(500, new { message = "Erro interno ao processar pedido de scraping.", success = false, error = ex.Message });
+                var requestId = Guid.NewGuid().ToString();
+                _logService.AddLog(requestId, $"❌ Erro ao processar pedido de scraping: {ex.Message}", "ERROR");
+                return StatusCode(500, new { 
+                    message = "Erro interno ao processar pedido de scraping.", 
+                    success = false, 
+                    error = ex.Message,
+                    requestId = requestId
+                });
             }
         }
 
+        [HttpPost("scrape/logs")]
+        public IActionResult AddScrapingLog([FromBody] ScrapingLogRequest request)
+        {
+            try
+            {
+                _logService.AddLog("global", request.Message, request.Level ?? "INFO");
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro ao adicionar log.", error = ex.Message });
+            }
+        }
+
+        [HttpGet("scrape/logs")]
+        public IActionResult GetScrapingLogs()
+        {
+            try
+            {
+                var logs = _logService.GetLogs("global");
+                return Ok(new { logs });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro ao buscar logs.", error = ex.Message });
+            }
+        }
+    }
+
+    public class ScrapingLogRequest
+    {
+        public string RequestId { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string? Level { get; set; }
     }
 }

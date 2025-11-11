@@ -5,6 +5,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Scraper.Helpers;
 using System.Text;
+using System.Text.Json;
 
 namespace Scraper.Services
 {
@@ -35,14 +36,80 @@ namespace Scraper.Services
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += async (sender, ea) =>
             {
-                var url = Encoding.UTF8.GetString(ea.Body.ToArray());
-                Console.WriteLine($"📥 Pedido recebido: {url}");
+                string requestId = string.Empty;
+                string url = string.Empty;
 
-                using var scope = _scopeFactory.CreateScope();
-                var scraper = scope.ServiceProvider.GetRequiredService<ScraperService>();
-                await scraper.RunScraperAsync(url);
+                try
+                {
+                    // Tenta extrair RequestId dos headers
+                    if (ea.BasicProperties.Headers != null && 
+                        ea.BasicProperties.Headers.TryGetValue("RequestId", out var requestIdObj))
+                    {
+                        requestId = Encoding.UTF8.GetString((byte[])requestIdObj);
+                    }
 
-                _channel.BasicAck(ea.DeliveryTag, false);
+                    // Tenta deserializar mensagem JSON
+                    var messageBody = Encoding.UTF8.GetString(ea.Body.ToArray());
+                    try
+                    {
+                        var message = JsonSerializer.Deserialize<JsonElement>(messageBody);
+                        if (message.TryGetProperty("Url", out var urlProp))
+                            url = urlProp.GetString() ?? messageBody;
+                        if (message.TryGetProperty("RequestId", out var requestIdProp))
+                            requestId = requestIdProp.GetString() ?? requestId;
+                    }
+                    catch
+                    {
+                        // Se não for JSON, assume que é apenas a URL
+                        url = messageBody;
+                    }
+
+                    // Se não tem RequestId, gera um novo
+                    if (string.IsNullOrEmpty(requestId))
+                    {
+                        requestId = Guid.NewGuid().ToString();
+                    }
+
+                    // Se não tem URL, usa o body como URL
+                    if (string.IsNullOrEmpty(url))
+                    {
+                        url = messageBody;
+                    }
+
+                    var apiBaseUrl = _config["ApiBaseUrl"] ?? "http://api:8080";
+                    var logger = new ScrapingLogger(apiBaseUrl, requestId);
+                    
+                    try
+                    {
+                        logger.Log($"📥 Pedido recebido: {url}", "INFO");
+
+                        using var scope = _scopeFactory.CreateScope();
+                        var scraper = scope.ServiceProvider.GetRequiredService<ScraperService>();
+                        await scraper.RunScraperAsync(url, logger);
+
+                        logger.Log("✅ Processamento do scraping concluído com sucesso", "SUCCESS");
+                    }
+                    finally
+                    {
+                        // Aguarda um pouco para garantir que todos os logs sejam enviados
+                        await Task.Delay(1000);
+                        logger.Dispose();
+                    }
+
+                    _channel.BasicAck(ea.DeliveryTag, false);
+                }
+                catch (Exception ex)
+                {
+                    if (!string.IsNullOrEmpty(requestId))
+                    {
+                        var apiBaseUrl = _config["ApiBaseUrl"] ?? "http://api:8080";
+                        var logger = new ScrapingLogger(apiBaseUrl, requestId);
+                        logger.Log($"❌ Erro ao processar scraping: {ex.Message}", "ERROR");
+                        logger.Dispose();
+                    }
+                    Console.WriteLine($"❌ Erro ao processar mensagem: {ex.Message}");
+                    _channel.BasicAck(ea.DeliveryTag, false);
+                }
             };
 
             _channel.BasicConsume(queue: "scrape_requests", autoAck: false, consumer: consumer);

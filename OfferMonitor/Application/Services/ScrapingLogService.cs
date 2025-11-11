@@ -13,7 +13,7 @@ namespace Application.Services
     public interface IScrapingLogService
     {
         void AddLog(string requestId, string message, string level = "INFO");
-        List<ScrapingLogEntry> GetLogs(string requestId);
+        List<ScrapingLogEntry> GetLogs(string key);
         void ClearLogs(string requestId);
         bool HasLogs(string requestId);
     }
@@ -47,12 +47,11 @@ namespace Application.Services
             );
         }
 
-        public List<ScrapingLogEntry> GetLogs(string requestId)
+        public List<ScrapingLogEntry> GetLogs(string key = "global")
         {
-            if (_logs.TryGetValue(requestId, out var logs))
-            {
-                return new List<ScrapingLogEntry>(logs);
-            }
+            if (_logs.TryGetValue(key, out var logs))
+                return logs.OrderBy(l => l.Timestamp).ToList();
+
             return new List<ScrapingLogEntry>();
         }
 

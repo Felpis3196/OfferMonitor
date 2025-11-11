@@ -42,6 +42,14 @@
       ref="scrapeFormRef"
     />
 
+    <!-- Scraping Logs -->
+    <ScrapingLogs
+      v-if="currentRequestId"
+      :request-id="currentRequestId"
+      :visible="showLogs"
+      @close="handleCloseLogs"
+    />
+
     <!-- Error Message -->
     <transition name="fade">
       <div v-if="error" class="error-message">
@@ -131,6 +139,7 @@ import ScrapeForm from '../components/ScrapeForm.vue';
 import SearchBar from '../components/SearchBar.vue';
 import FilterPanel from '../components/FilterPanel.vue';
 import OffersStats from '../components/OffersStats.vue';
+import ScrapingLogs from '../components/ScrapingLogs.vue';
 
 const {
   offers,
@@ -153,6 +162,8 @@ const {
 
 const scrapeFormRef = ref<InstanceType<typeof ScrapeForm> | null>(null);
 const searchBarRef = ref<InstanceType<typeof SearchBar> | null>(null);
+const currentRequestId = ref<string | null>(null);
+const showLogs = ref(false);
 
 onMounted(() => {
   loadOffers();
@@ -188,12 +199,45 @@ const handleDeleteAll = async () => {
 
 const handleScrape = async (url: string) => {
   try {
-    const message = await requestScraping(url);
-    scrapeFormRef.value?.showMessage(message, 'success');
+    const result = await requestScraping(url);
+    scrapeFormRef.value?.showMessage(result.message, 'success');
+    
+    // Mostra os logs se houver requestId
+    if (result.requestId) {
+      currentRequestId.value = result.requestId;
+      showLogs.value = true;
+      
+      // Aguarda um pouco e recarrega as ofertas periodicamente enquanto processa
+      const checkInterval = setInterval(async () => {
+        try {
+          await loadOffers();
+          // Para de verificar após 2 minutos (tempo máximo esperado para scraping)
+        } catch (err) {
+          console.error('Erro ao recarregar ofertas:', err);
+        }
+      }, 5000);
+      
+      // Para de verificar após 2 minutos
+      setTimeout(() => {
+        clearInterval(checkInterval);
+      }, 120000);
+    }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Erro ao solicitar scraping';
     scrapeFormRef.value?.showMessage(errorMessage, 'error');
   }
+};
+
+const handleCloseLogs = () => {
+  showLogs.value = false;
+  // Limpa o requestId após um delay para permitir que os logs finais sejam carregados
+  setTimeout(() => {
+    if (!showLogs.value) {
+      currentRequestId.value = null;
+      // Recarrega ofertas quando fecha os logs
+      loadOffers();
+    }
+  }, 2000);
 };
 
 const handleSearch = (query: string) => {

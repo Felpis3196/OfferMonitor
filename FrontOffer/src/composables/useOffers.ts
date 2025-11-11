@@ -117,12 +117,12 @@ export function useOffers() {
     
     try {
       const request: ScraperRequest = { url };
-      const message = await offerService.requestScraping(request);
+      const result = await offerService.requestScraping(request);
       
-      // Recarrega as ofertas após o scraping
-      await loadOffers();
+      // Não recarrega as ofertas imediatamente - aguarda o scraping terminar
+      // O usuário pode acompanhar pelos logs
       
-      return message;
+      return result;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erro ao solicitar scraping';
       console.error('Erro ao solicitar scraping:', err);
