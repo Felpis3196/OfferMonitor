@@ -68,7 +68,7 @@ src/
 ## ⚙️ Configuração
 
 A URL da API pode ser configurada através da variável de ambiente:
-- `VITE_API_BASE_URL` (padrão: `http://localhost:5000`)
+- `VITE_API_BASE_URL` (padrão: `http://localhost:8080`)
 
 ## 📝 Próximos Passos
 
@@ -77,6 +77,7 @@ A estrutura está pronta para ser expandida. Você pode:
 - Criar novas views para outras funcionalidades
 - Adicionar mais composables para lógica específica
 - Expandir os serviços conforme a API cresce
+
 
 
 

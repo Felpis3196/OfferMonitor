@@ -23,11 +23,19 @@ export interface ScraperRequest {
   url: string;
 }
 
+export interface ScraperResponse {
+  message: string;
+  url: string;
+  success: boolean;
+  error?: string;
+}
+
 export interface ApiResponse<T> {
   data: T;
   status: number;
   message?: string;
 }
+
 
 
 

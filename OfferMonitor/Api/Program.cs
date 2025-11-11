@@ -11,9 +11,33 @@ using Scraper;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(); // ← Isso registra os controllers
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Garante que o JSON usa camelCase (url ao invés de Url)
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// CORS - Permite requisições do front-end
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://localhost:8080",
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:3000"
+              )
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials()
+              .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+    });
+});
 
 // RabbitMQ
 builder.Services.AddSingleton<RabbitMqPublisher>();
@@ -26,6 +50,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Services
 builder.Services.AddScoped<IOfferRepository, OfferRepository>();
 builder.Services.AddScoped<IOfferService, OfferService>();
+builder.Services.AddSingleton<Application.Services.IScrapingLogService, Application.Services.ScrapingLogService>();
 
 var app = builder.Build();
 
@@ -96,7 +121,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// CORS deve ser chamado antes de outros middlewares
+app.UseCors("AllowFrontend");
+
+// Removido UseHttpsRedirection para evitar problemas com CORS em desenvolvimento
+// app.UseHttpsRedirection();
+
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

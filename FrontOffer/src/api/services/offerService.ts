@@ -3,7 +3,7 @@
  */
 import { apiClient } from '../client';
 import { API_CONFIG } from '../../config/api';
-import type { Offer, OfferInput, ScraperRequest } from '../../types/offer';
+import type { Offer, OfferInput, ScraperRequest, ScraperResponse } from '../../types/offer';
 
 export class OfferService {
   /**
@@ -68,7 +68,7 @@ export class OfferService {
    */
   async deleteAll(): Promise<void> {
     const response = await apiClient.delete<void>(
-      API_CONFIG.endpoints.offers
+      `${API_CONFIG.endpoints.offers}/all`
     );
     
     if (response.status !== 200) {
@@ -80,20 +80,36 @@ export class OfferService {
    * Solicita scraping de uma URL
    */
   async requestScraping(request: ScraperRequest): Promise<string> {
-    const response = await apiClient.post<string>(
-      API_CONFIG.endpoints.scrape,
-      request
-    );
-    
-    if (response.status !== 200) {
-      throw new Error(`Erro ao solicitar scraping: ${response.message}`);
+    try {
+      const response = await apiClient.post<ScraperResponse>(
+        API_CONFIG.endpoints.scrape,
+        request,
+        60000 // Timeout de 60 segundos para scraping
+      );
+      
+      if (response.status !== 200) {
+        const errorMessage = response.data?.message || response.message || 'Erro ao solicitar scraping';
+        throw new Error(errorMessage);
+      }
+      
+      // Verifica se a resposta indica sucesso
+      if (response.data && !response.data.success) {
+        throw new Error(response.data.message || response.data.error || 'Erro ao solicitar scraping');
+      }
+      
+      return response.data?.message || 'Scraping solicitado com sucesso';
+    } catch (error) {
+      // Propaga o erro com mensagem mais clara
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Erro desconhecido ao solicitar scraping');
     }
-    
-    return response.data || 'Scraping solicitado com sucesso';
   }
 }
 
 export const offerService = new OfferService();
+
 
 
 
